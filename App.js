@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,10 +10,48 @@ import {
   PanResponder,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-
+import { Audio, Video } from "expo-av";
+import sampleData from "./sampleData/sampleData.js";
 export default function App() {
   const { width } = useWindowDimensions();
   const sidePadding = 20;
+  const [sound, setSound] = React.useState();
+  const [currentStopTime, setCurrentStopTime] = useState();
+
+  const loading = async () => {
+    const { sound } = await Audio.Sound.createAsync(sampleData.song1.musicLink);
+    console.log("THIS IS SOUND: ", sound);
+    setSound(sound);
+    Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+  };
+
+  async function playSound() {
+    console.log("Playing Sound");
+    if (sound) {
+      await sound.playAsync();
+    }
+  }
+
+  async function stopSound() {
+    if (sound) {
+      await sound.stopAsync();
+      console.log("stopped");
+    }
+  }
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          console.log("Unloading Sound");
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
+
+  useEffect(() => {
+    loading();
+  }, []);
+
   const [cardArray, setCardArray] = React.useState([
     {
       color: "red",
@@ -200,7 +238,11 @@ export default function App() {
               transform: [{ scale: 0.95 }, { perspective: 1000 }],
             },
           ]}
-        ></Animated.View>
+        >
+          <View>
+            <Text>HRYOOOO</Text>
+          </View>
+        </Animated.View>
 
         <Animated.View
           style={[
@@ -246,10 +288,10 @@ export default function App() {
       </View>
 
       <View style={styles.container}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => playSound()}>
           <Text>BUtton 1</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => stopSound()}>
           <Text>BUtton 1</Text>
         </TouchableOpacity>
         <TouchableOpacity>
