@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,41 +15,84 @@ import sampleData from "./sampleData/sampleData.js";
 export default function App() {
   const { width } = useWindowDimensions();
   const sidePadding = 20;
-  const [sound, setSound] = React.useState();
   const [currentStopTime, setCurrentStopTime] = useState();
+  const prevTrackRef = useRef({
+    song: sampleData[sampleData.length - 1],
+    sound: null,
+  });
+  const [current, setCurrent] = useState({
+    song: sampleData[0],
+    sound: null,
+    //index should be 'find by index in our sample data
+    index: 0,
+  });
+  const [next, setNext] = useState({
+    song: sampleData[1],
+    sound: null,
+    index: 1,
+  });
 
-  const loading = async () => {
-    const { sound } = await Audio.Sound.createAsync(sampleData.song1.musicLink);
-    console.log("THIS IS SOUND: ", sound);
-    setSound(sound);
+  const loading = async (songNumber) => {
+    const doesNextExist = sampleData[songNumber + 1];
+
+    const { sound: currentSound } = await Audio.Sound.createAsync(
+      sampleData[songNumber].musicLink
+    );
+    console.log(currentSound);
+    const { sound: nextSound } = await Audio.Sound.createAsync(
+      sampleData[songNumber + 1]?.musicLink
+        ? sampleData[songNumber + 1].musicLink
+        : sampleData[0].musicLink
+    );
+
+    if (prevTrackRef.current.sound == null) {
+      const { sound: prevSound } = await Audio.Sound.createAsync(
+        prevTrackRef.current.song.musicLink
+      );
+      prevTrackRef.current = {
+        song: prevTrackRef.current.song,
+        sound: prevSound,
+        index: sampleData.length - 1,
+      };
+    } else {
+      let newPrevSound = current.sound;
+      await newPrevSound?.setPositionAsync(0);
+      prevTrackRef.current = {
+        song: current.song,
+        sound: newPrevSound,
+        index: current.index,
+      };
+    }
+    setCurrent({
+      song: sampleData[songNumber],
+      sound: currentSound,
+      index: songNumber,
+    });
+    setNext({
+      song: doesNextExist ? sampleData[songNumber + 1] : sampleData[0],
+      sound: nextSound,
+      index: doesNextExist ? songNumber + 1 : 0,
+    });
     Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+    await currentSound.playAsync();
   };
 
   async function playSound() {
     console.log("Playing Sound");
-    if (sound) {
-      await sound.playAsync();
+    if (current.sound) {
+      await current.sound.playAsync();
     }
   }
 
   async function stopSound() {
-    if (sound) {
-      await sound.stopAsync();
+    if (current.sound) {
+      await current.sound.stopAsync();
       console.log("stopped");
     }
   }
 
   useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
-
-  useEffect(() => {
-    loading();
+    loading(0);
   }, []);
 
   const [cardArray, setCardArray] = React.useState([
@@ -86,24 +129,43 @@ export default function App() {
   const disabled = false;
   const cardPosition = React.useRef(new Animated.Value(0)).current;
 
-  const onSwipedLeft = () => {
-    setCardArray((prev) => {
-      let updatedArray = [...prev];
-      updatedArray.splice(0, 1);
-      const removedCard = updatedArray.splice(0, 1);
-      updatedArray.push(removedCard[0]);
-      return updatedArray;
-    });
+  //HATE THE SONG
+  const onSwipedLeft = async () => {
+    try {
+      await current.sound.stopAsync();
+      setCardArray((prev) => {
+        let updatedArray = [...prev];
+        updatedArray.splice(0, 1);
+        const removedCard = updatedArray.splice(0, 1);
+        updatedArray.push(removedCard[0]);
+        return updatedArray;
+      });
+      // await current.sound?.unloadAsync();
+      //update next
+      // loading(current.song.currentIndex+1);
+      loading(next.index);
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const onSwipedRight = () => {
-    setCardArray((prev) => {
-      let updatedArray = [...prev];
-      const removedCard = updatedArray.splice(0, 1);
-      updatedArray.push(removedCard[0]);
-      return updatedArray;
-    });
+  //LOVE THE SONG
+  const onSwipedRight = async () => {
+    try {
+      console.log("THIS IS CURRENT: ", current);
+      await current.sound.stopAsync();
+      setCardArray((prev) => {
+        let updatedArray = [...prev];
+        const removedCard = updatedArray.splice(0, 1);
+        updatedArray.push(removedCard[0]);
+        return updatedArray;
+      });
+
+      // await current.sound?.unloadAsync();
+      loading(next.index);
+    } catch (error) {
+      console.log(error);
+    }
   };
-  console.log(cardArray);
   const swipedLeft = () => {
     Animated.spring(cardPosition, {
       duration: 250,
@@ -150,22 +212,24 @@ export default function App() {
   };
 
   //10 is how many pixels user needs to move the card to fire off
-  const panResponder = React.useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => false,
-      onStartShouldSetPanResponderCapture: () => false,
-      onMoveShouldSetPanResponder: (e, gestureState) =>
-        Math.abs(gestureState.dx) > 10,
-      onMoveShouldSetPanResponderCapture: (e, gestureState) =>
-        Math.abs(gestureState.dx) > 5 && Math.abs(gestureState.dy) <= 5,
-      onPanResponderGrant: () => !disabled,
-      onPanResponderMove: onMove,
-      onPanResponderRelease: onEnd,
-      onPanResponderTerminate: onEnd,
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderTerminationRequest: () => true,
-    })
-  ).current;
+  const panResponder = React.useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => false,
+        onStartShouldSetPanResponderCapture: () => false,
+        onMoveShouldSetPanResponder: (e, gestureState) =>
+          Math.abs(gestureState.dx) > 10,
+        onMoveShouldSetPanResponderCapture: (e, gestureState) =>
+          Math.abs(gestureState.dx) > 5 && Math.abs(gestureState.dy) <= 5,
+        onPanResponderGrant: () => !disabled,
+        onPanResponderMove: onMove,
+        onPanResponderRelease: onEnd,
+        onPanResponderTerminate: onEnd,
+        onShouldBlockNativeResponder: () => true,
+        onPanResponderTerminationRequest: () => true,
+      }),
+    [current, next]
+  );
 
   const styles = {
     container: {
