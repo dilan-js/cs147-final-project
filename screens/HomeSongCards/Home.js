@@ -1,5 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect, useRef } from "react";
+import Slider from "@react-native-community/slider";
+
 import {
   StyleSheet,
   Text,
@@ -20,6 +22,7 @@ import Cuco from "../../sampleData/CUCO.png";
 export default function Home() {
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [progress, setProgress] = useState(0);
   const { width } = useWindowDimensions();
   const sidePadding = 20;
   const [currentStopTime, setCurrentStopTime] = useState();
@@ -30,15 +33,18 @@ export default function Home() {
   const [current, setCurrent] = useState({
     song: sampleData[0],
     sound: null,
+    duration: 0,
     //index should be 'find by index in our sample data
     index: 0,
   });
   const [next, setNext] = useState({
     song: sampleData[1],
     sound: null,
+    duration: 0,
     index: 1,
   });
 
+  const [playing, setPlaying] = useState(true);
   const loading = async (songNumber) => {
     const doesNextExist = sampleData[songNumber + 1];
 
@@ -69,30 +75,54 @@ export default function Home() {
         index: current.index,
       };
     }
+
+    const {
+      playableDurationMillis: currentSongDuration,
+    } = await currentSound.getStatusAsync();
+    const {
+      playableDurationMillis: nextSongDuration,
+    } = await nextSound.getStatusAsync();
+
     setCurrent({
       song: sampleData[songNumber],
       sound: currentSound,
+      duration: 15,
       index: songNumber,
     });
     setNext({
       song: doesNextExist ? sampleData[songNumber + 1] : sampleData[0],
       sound: nextSound,
+      duration: 15,
       index: doesNextExist ? songNumber + 1 : 0,
     });
     Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-    await currentSound.playAsync();
+
+    // await currentSound.playAsync();
+
+    await currentSound.setStatusAsync({
+      shouldPlay: playing,
+      positionMillis: sampleData[songNumber].start * 1000,
+    });
   };
 
   async function playSound() {
     console.log("Playing Sound");
     if (current.sound) {
-      await current.sound.playAsync();
+      await current.sound.setStatusAsync({
+        shouldPlay: true,
+        positionMillis: (current.song.start + progress) * 1000,
+      });
+      setPlaying(true);
     }
   }
 
   async function stopSound() {
     if (current.sound) {
-      await current.sound.stopAsync();
+      await current.sound.setStatusAsync({
+        shouldPlay: false,
+        positionMillis: (current.song.start + progress) * 1000,
+      });
+      setPlaying(false);
       console.log("stopped");
     }
   }
@@ -113,7 +143,7 @@ export default function Home() {
       color: "dodgerblue",
       songTitle: "Lovetripper",
       artist: "Cuco",
-      coverArt: "../../sampleData/CUCO.png",
+      coverArt: { Cuco },
     },
     {
       color: "yellow",
@@ -227,6 +257,23 @@ export default function Home() {
     }
   };
 
+  const padWithZero = (string: number) => {
+    return ("0" + string).slice(-2);
+  };
+
+  const humanizeDuration = (seconds: number) => {
+    const isHoursMode = seconds >= 3600;
+    let hours = Math.floor(seconds / 3600);
+    let minutes = Math.floor(seconds / 60 - hours * 60);
+    let secs = Math.floor(seconds - hours * 3600 - minutes * 60);
+    return isHoursMode
+      ? padWithZero(hours) +
+          ":" +
+          padWithZero(minutes) +
+          ":" +
+          padWithZero(secs)
+      : padWithZero(minutes) + ":" + padWithZero(secs);
+  };
   const onMove = (e, gestureState) => {
     cardPosition.setValue(gestureState.dx);
   };
@@ -301,11 +348,14 @@ export default function Home() {
     songTitle: {
       fontSize: 25,
       fontWeight: "500",
+      textAlign: "center",
     },
     artist: {
       fontSize: 16,
       fontWeight: "500",
       color: "#f4b400",
+      textDecorationLine: "underline",
+      textAlign: "center",
     },
     modalView: {
       margin: 20,
@@ -350,6 +400,43 @@ export default function Home() {
       marginTop: 15,
     },
   };
+
+  const onSeek = async (position) => {
+    //position is the exact place user slid to
+    await current.sound.setStatusAsync({
+      shouldPlay: playing,
+      positionMillis: current.song.start + position,
+    });
+    setProgress(position);
+  };
+
+  useEffect(() => {
+    let progressInterval;
+    if (playing) {
+      progressInterval = setInterval(() => {
+        setProgress((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      progressInterval && clearInterval(progressInterval);
+    };
+  }, [playing]);
+
+  useEffect(() => {
+    if (progress >= 15) {
+      (async function resetTrack() {
+        await current.sound.stopAsync();
+        await current.sound.setStatusAsync({
+          //if when we slide to the end and want to
+          //start autoplay: do this; otherwise: shouldPlay: playing. Remove setPLaying also
+          shouldPlay: true,
+          positionMillis: current.song.start * 1000,
+        });
+        setProgress(0);
+        setPlaying(true);
+      })();
+    }
+  }, [progress, current, playing]);
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
@@ -421,19 +508,16 @@ export default function Home() {
               backgroundColor: "pink",
             }}
           >
-            <View>
-              <View
-                style={{
-                  justifyContent: "center",
-                  width: "80%",
-                  backgroundColor: "white",
-                  textAlign: "center",
-                }}
-              >
-                <Image source={require("../../sampleData/CUCO.png")} />
-                <Text style={styles.songTitle}>{cardArray[0].songTitle}</Text>
+            <View
+              style={{
+                justifyContent: "center",
+                backgroundColor: "white",
+              }}
+            >
+              <Image source={require("../../sampleData/CUCO.png")} />
+              <Text style={styles.songTitle}>{cardArray[0].songTitle}</Text>
 
-                {/* <View style={styles.modalCenteredView}>
+              {/* <View style={styles.modalCenteredView}>
                   <Modal
                     animationType="slide"
                     transparent={true}
@@ -465,22 +549,55 @@ export default function Home() {
                     <Text style={{ color: "black" }}>Show Modal</Text>
                   </TouchableOpacity>
                 </View> */}
-                <Text style={styles.artist}>{cardArray[0].artist}</Text>
+              <Text style={styles.artist}>{cardArray[0].artist}</Text>
+              <View
+                style={{
+                  backgroundColor: "red",
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  alignItems: "center",
+                  flexDirection: "row",
+                }}
+              >
+                <FontAwesome name="undo" size={30} color="black" />
+
+                <FontAwesome
+                  onPress={playing ? stopSound : playSound}
+                  name={playing ? "pause-circle" : "play-circle"}
+                  size={50}
+                  color="black"
+                />
+                <FontAwesome name="share" size={30} color="black" />
+              </View>
+              <View
+                style={{
+                  backgroundColor: "powderblue",
+                  display: "flex",
+                  justifyContent: "space-evenly",
+                  paddingHorizontal: 20,
+                }}
+              >
+                <Slider
+                  style={{ height: 40, marginHorizontal: 10 }}
+                  minimumValue={0}
+                  value={Math.floor(progress)}
+                  onSlidingComplete={onSeek}
+                  maximumValue={current.duration}
+                  minimumTrackTintColor="#FFFFFF"
+                  maximumTrackTintColor="#000000"
+                />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text>{humanizeDuration(progress)}</Text>
+                  <Text>-{humanizeDuration(current.duration - progress)}</Text>
+                </View>
               </View>
             </View>
-          </View>
-          <View
-            style={{
-              backgroundColor: "red",
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
-          >
-            <FontAwesome name="undo" size={30} color="black" />
-            <AntDesign name="play" size={50} color="black" />
-            <FontAwesome name="share" size={30} color="black" />
           </View>
         </Animated.View>
       </View>
