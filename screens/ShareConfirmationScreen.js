@@ -3,21 +3,20 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, Dimensions } from 'rea
 
 const windowWidth = Dimensions.get('window').width;
 
-export default function WelcomeScreen({ navigation }) {
+export default function SnippetSharedScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.outer}>
       </View>
       <View style={styles.inner}>
-        <Image style={styles.logo} source={require('../../assets/logo.png')}/>
-        <Text style={styles.welcome}>Welcome to Staccato!</Text>
+        <Text style={styles.welcome}>Snippet Shared!</Text>
       </View>
       <View style={styles.outer}>
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => {navigation.navigate('GenreScreen')}}
+          onPress={() => {navigation.navigate('Home')}}
         >
-          <Image style={styles.arrow} source={require('../../assets/arrow2.png')}/>
+          <Image style={styles.arrow} source={require('../assets/arrow.png')}/>
         </TouchableOpacity>
       </View>
     </View>
@@ -31,17 +30,6 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: '#121212',
     flex: 1,
-  },
-  paragraph: {
-    margin: 24,
-    marginTop: 0,
-    fontSize: 14,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  logo: {
-    height: 192,
-    width: 128,
   },
   outer: {
     flex: 1,

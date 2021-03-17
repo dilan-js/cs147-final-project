@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { ProgressBar } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function GenreScreen({ navigation }) {
+export default function ReasonScreen({ navigation }) {
   const [clicked1, setClicked1] = useState(false);
   const [clicked2, setClicked2] = useState(false);
   const [clicked3, setClicked3] = useState(false);
@@ -13,7 +14,7 @@ export default function GenreScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.outer}>
-        <Text style={styles.question}>Select Genre(s)</Text>
+        <Text style={styles.question}>What are your main reasons for listening to music?</Text>
       </View>
       <View style={styles.inner}>
         <View style={styles.row}>
@@ -23,7 +24,7 @@ export default function GenreScreen({ navigation }) {
             }}
             style={clicked1 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Pop</Text>
+            <Text style={styles.boxText}>Intimate Listening</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={()=> {
@@ -31,7 +32,7 @@ export default function GenreScreen({ navigation }) {
             }}
             style={clicked2 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Rap</Text>
+            <Text style={styles.boxText}>Ambiance</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
@@ -41,7 +42,7 @@ export default function GenreScreen({ navigation }) {
             }}
             style={clicked3 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>R&B</Text>
+            <Text style={styles.boxText}>Excercise</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={()=> {
@@ -49,16 +50,19 @@ export default function GenreScreen({ navigation }) {
             }}
             style={clicked4 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Indie Rock</Text>
+            <Text style={styles.boxText}>Studying</Text>
           </TouchableOpacity>
         </View>
+      </View>
+      <View style={styles.progress}>
+        <ProgressBar progress={1} color={'#f4b400'} />
       </View>
       <View style={styles.outer}>
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => {navigation.navigate('PickArtistScreen')}}
+          onPress={() => {navigation.navigate('TabNav')}}
         >
-          <Image style={styles.arrow} source={require('../../assets/arrow.png')}/>
+          <Image style={styles.arrow} source={require('../assets/arrow.png')}/>
         </TouchableOpacity>
       </View>
     </View>
@@ -122,5 +126,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#C4C4C4',
     textAlign: 'center'
+  },
+  progress: {
+    width: '60%',
+    flex: 1,
+    justifyContent: 'flex-end'
   }
 });

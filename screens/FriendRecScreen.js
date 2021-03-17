@@ -1,27 +1,42 @@
-import React, {useState} from 'react';
+import * as React from 'react'
 import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function ProfileScreen({ navigation }) {
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+const Stack = createStackNavigator();
+
+function Recs({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.segment1}>
-        <Image style={styles.picture} source={require('../../assets/profile.png')} />
-        <Text style={styles.name}> Ben Early </Text>
-        <Text style={styles.handle}> @benearly </Text>
-      </View>
-      <View style={styles.segment2}>
-        <View style={styles.friends}>
-          <Text style={styles.text}> Friends </Text>
-        </View>
-        <View style={styles.qSelection}>
-          <Text style={styles.text}> Queue Criteria </Text>
-        </View>
-      </View>
+      
     </View>
+  );
+}
+
+export default function FriendRecScreen() {
+  return (
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: "#535353",
+            },
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontSize: 24,
+              color: '#C4C4C4',
+            },
+            headerBackTitle: () => null,
+          }}
+        >
+          <Stack.Screen 
+            name="Friend Recs" 
+            component={Recs} 
+          />
+        </Stack.Navigator>
   );
 }
 
@@ -78,5 +93,17 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 22,
     color: '#C4C4C4'
+  },
+  header: {
+    height: '10%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#535353',
+    width: '200%'
+  },
+  headerText: {
+    fontWeight: 'bold',
+    fontSize: 24,
+    color: '#C4C4C4',
   }
 });

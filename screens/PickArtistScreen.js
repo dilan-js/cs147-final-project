@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { ProgressBar } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -53,12 +54,15 @@ export default function PickArtistScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+      <View style={styles.progress}>
+        <ProgressBar progress={0.5} color={'#f4b400'} />
+      </View>
       <View style={styles.outer}>
         <TouchableOpacity 
           style={styles.button}
           onPress={() => {navigation.navigate('SongComponentScreen')}}
         >
-          <Image style={styles.arrow} source={require('../../assets/arrow.png')}/>
+          <Image style={styles.arrow} source={require('../assets/arrow.png')}/>
         </TouchableOpacity>
       </View>
     </View>
@@ -123,5 +127,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#C4C4C4',
     textAlign: 'center'
+  },
+  progress: {
+    width: '60%',
+    flex: 1,
+    justifyContent: 'flex-end'
   }
 });

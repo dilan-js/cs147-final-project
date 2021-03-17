@@ -15,11 +15,11 @@ import {
   Pressable,
 } from "react-native";
 import {useSelector} from 'react-redux';
-import {setAction, getState} from '../../redux/actions';
+import {setAction, getState} from '../redux/actions';
 import { FontAwesome, Ionicons, AntDesign } from "@expo/vector-icons";
 import { Audio, Video } from "expo-av";
-import sampleData from "../../sampleData/sampleData";
-import Cuco from "../../sampleData/CUCO.png";
+import sampleData from "../sampleData/sampleData";
+import Cuco from "../sampleData/CUCO.png";
 
 export default function Home({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -177,47 +177,47 @@ export default function Home({navigation}) {
 
   const [cardArray, setCardArray] = React.useState([
     {
-      color: "red",
+      color: "#f4f4f4",
       text: "Hello world",
       songTitle: "Lovetripper",
       artist: "Cuco",
       coverArt: { Cuco },
     },
     {
-      color: "dodgerblue",
+      color: "#f4f4f4",
       songTitle: "Lovetripper",
       artist: "Cuco",
       coverArt: { Cuco },
     },
     {
-      color: "yellow",
+      color: "#f4f4f4",
       songTitle: "Lovetripper",
       artist: "Cuco",
-      coverArt: "../../sampleData/CUCO.png",
+      coverArt: { Cuco },
     },
     {
-      color: "orange",
+      color: "#f4f4f4",
       songTitle: "Lovetripper",
       artist: "Cuco",
-      coverArt: "../../sampleData/CUCO.png",
+      coverArt: { Cuco },
     },
     {
-      color: "black",
+      color: "#f4f4f4",
       songTitle: "Lovetripper",
       artist: "Cuco",
-      coverArt: "../../sampleData/CUCO.png",
+      coverArt: { Cuco },
     },
     {
-      color: "pink",
+      color: "#f4f4f4",
       songTitle: "Lovetripper",
       artist: "Cuco",
-      coverArt: "../../sampleData/CUCO.png",
+      coverArt: { Cuco },
     },
     {
-      color: "green",
+      color: "#f4f4f4",
       songTitle: "Lovetripper",
       artist: "Cuco",
-      coverArt: "../../sampleData/CUCO.png",
+      coverArt: { Cuco },
     },
   ]);
 
@@ -560,7 +560,7 @@ export default function Home({navigation}) {
                 backgroundColor: "white",
               }}
             >
-              <Image source={require("../../sampleData/CUCO.png")} />
+              <Image source={require("../sampleData/CUCO.png")} />
               <Text style={styles.songTitle}>{cardArray[0].songTitle}</Text>
 
               {/* <View style={styles.modalCenteredView}>

@@ -15,7 +15,7 @@ import {
   Keyboard
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import Friend from "../../Components/Friend";
+import Friend from "./Friend"
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -29,19 +29,21 @@ const DismissKeyboard = ({children}) => (
 export default function ShareScreen({ navigation }) {
 
   return (
+    <DismissKeyboard>
     <View style={styles.container}>
       <View style={styles.top}>
-        <TouchableOpacity onPress={() => {navigation.navigate('ShareConfirmationScreen')}}>
-          <Image style={styles.arrow} source={require('../../assets/arrow.png')}/>
+        <TouchableOpacity onPress={() => {navigation.navigate('ShareConfiirmationScreen')}}>
+          <Image style={styles.arrow} source={require('../assets/arrow.png')}/>
         </TouchableOpacity>
       </View>
       <View style={styles.list}>
-        <Friend name={"Josh Lara"} handle={"@jlara"} pic={'../../assets/profileIcon.png'}/>
-        <Friend name={"Dilan Nana"} handle={"@NanaDilan"} pic={'../../assets/profileIcon.png'}/>
-        <Friend name={"Jane Doe"} handle={"@JohnD"} pic={'../../assets/profileIcon.png'}/>
-        <Friend name={"John Doe"} handle={"@JaneD"} pic={'../../assets/profileIcon.png'}/>
+        <Friend name={"Josh Lara"} handle={"@jlara"} pic={'../assets/profileIcon.png'}/>
+        <Friend name={"Dilan Nana"} handle={"@NanaDilan"} pic={'../assets/profileIcon.png'}/>
+        <Friend name={"Jane Doe"} handle={"@JohnD"} pic={'../assets/profileIcon.png'}/>
+        <Friend name={"John Doe"} handle={"@JaneD"} pic={'../assets/profileIcon.png'}/>
       </View>
     </View>
+    </DismissKeyboard>
   );
 }
 

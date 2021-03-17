@@ -9,14 +9,15 @@ export default function WelcomeScreen({ navigation }) {
       <View style={styles.outer}>
       </View>
       <View style={styles.inner}>
-        <Text style={styles.welcome}>Snippet Shared!</Text>
+        <Image style={styles.logo} source={require('./logo.png')}/>
+        <Text style={styles.welcome}>Welcome to Staccato!</Text>
       </View>
       <View style={styles.outer}>
         <TouchableOpacity 
           style={styles.button}
-          //onPress={() => {navigation.navigate('GenreScreen')}}
+          onPress={() => {navigation.navigate('GenreScreen')}}
         >
-          <Image style={styles.arrow} source={require('../../assets/arrow2.png')}/>
+          <Image style={styles.arrow} source={require('../assets/arrow.png')}/>
         </TouchableOpacity>
       </View>
     </View>
@@ -30,6 +31,17 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: '#121212',
     flex: 1,
+  },
+  paragraph: {
+    margin: 24,
+    marginTop: 0,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  logo: {
+    height: 192,
+    width: 128,
   },
   outer: {
     flex: 1,
@@ -45,6 +57,7 @@ const styles = StyleSheet.create({
   },
   button: {
     alignContent: 'center',
+
   },
   welcome: {
     fontWeight: 'bold',

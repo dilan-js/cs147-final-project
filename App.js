@@ -1,38 +1,69 @@
-import * as React from 'react';
-import { Text, View, StyleSheet, Image, Dimensions } from 'react-native';
-import Constants from 'expo-constants';
-import AssetExample from './Components/AssetExample';
-import { Card } from 'react-native-paper';
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Animated,
+  useWindowDimensions,
+  PanResponder,
+  Image
+} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import { Audio, Video } from "expo-av";
+import sampleData from "./sampleData/sampleData.js";
+import { Icons } from './assets/Icons';
 
 import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import WelcomeScreen from './screens/Welcome/WelcomeScreen';
-import GenreScreen from './screens/GenreScreen/GenreScreen';
-import PickArtistScreen from './screens/PickArtistScreen/PickArtistScreen';
-import ReasonScreen from './screens/ReasonScreen/ReasonScreen';
-import SongComponentScreen from './screens/SongComponentScreen/SongComponentScreen';
-import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
-import ShareScreen from './screens/ShareScreen.js/ShareScreen';
-import ShareConfirmationScreen from './screens/ShareConfirmationScreen/ShareConfirmationScreen';
-import HomeSongCards from './screens/HomeSongCards/Home';
-import QueueView from './screens/QueueView/QueueView';
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+import WelcomeScreen from './screens/WelcomeScreen';
+import GenreScreen from './screens/GenreScreen';
+import PickArtistScreen from './screens/PickArtistScreen';
+import ReasonScreen from './screens/ReasonScreen';
+import SongComponentScreen from './screens/SongComponentScreen';
+
+import HomeScreen from './screens/Home';
+import AllSavesScreen from './screens/AllSavesScreen';
+import FriendRecScreen from './screens/FriendRecScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import DailySavesScreen from './screens/DailySavesScreen';
 import {Provider} from 'react-redux';
 import store from './redux/store';
 
-const Stack = createStackNavigator();
-
-const windowWidth = Dimensions.get('window').width;
-
 function LogoTitle() {
   return (
-   <Image style={styles.logo} source={require('./assets/logo.png')}/>
+   <Image style={styles.logo} source={require('./screens/logo.png')}/>
   );
 }
 
+function TabNav({navigation}) {
+  return (
+    <Tab.Navigator
+          tabBarOptions={{
+            activeTintColor: '#f4b400',
+            inactiveTintColor: '#c4c4c4',
+            style: {backgroundColor: "#535353"}
+          }}
+        >
+          <Tab.Screen name="Home" component={HomeScreen} />
+          <Tab.Screen name="Friend Recs" component={FriendRecScreen} />
+          <Tab.Screen name="Daily Saves" component={DailySavesScreen} />
+          <Tab.Screen name="All Saves" component={AllSavesScreen} />
+          <Tab.Screen name="Profile" component={ProfileScreen} />
+        </Tab.Navigator>
+  );
+}
+
+
 export default function App() {
   return (
-    <Provider store={store}>
+        <Provider store={store}>
 
     <NavigationContainer>
       <Stack.Navigator
@@ -46,26 +77,17 @@ export default function App() {
             color: '#C4C4C4',
           },
           headerBackImage: () => (
-            <Image style={styles.back} source={require('./assets/previous.png')}/>
+            <Image style={styles.back} source={require('./screens/previous.png')}/>
           ),
           headerBackTitle: () => null,
         }}
       >
-        {/* <Stack.Screen 
-          name="Share Snippet" 
-          component={ShareScreen} 
-        />
-        <Stack.Screen 
-          name="ShareConfirmationScreen" 
-          component={ShareConfirmationScreen} 
-          options={{ headerShown: false }}
-        /> 
         <Stack.Screen 
           name="WelcomeScreen" 
           component={WelcomeScreen} 
           options={{ headerShown: false }}
         />
-         <Stack.Screen 
+        <Stack.Screen 
           name="GenreScreen" 
           component={GenreScreen} 
           options={{ headerTitle: props => <LogoTitle {...props} /> }}
@@ -84,20 +106,19 @@ export default function App() {
           name="SongComponentScreen" 
           component={SongComponentScreen}
           options={{ headerTitle: props => <LogoTitle {...props} /> }}  
-        /> */}
-        <Stack.Screen 
-          name="HomeSongCardsScreen" 
-          component={HomeSongCards}
-          options={{ headerTitle: props => <LogoTitle {...props} /> }}  
         />
-        <Stack.Screen 
-          name="QueueView" 
-          component={QueueView}
-          options={{ headerTitle: props => <LogoTitle {...props} /> }}  
-        />
-        {/* <Stack.Screen 
+        <Stack.Screen 
           name="Profile"
-          component={ProfileScreen}/> */}
+          component={ProfileScreen}
+        />
+        <Stack.Screen
+          name="TabNav"
+          component={TabNav}
+          options={{ 
+            headerShown: false, 
+            headerLeft: null
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
     </Provider>
@@ -105,19 +126,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   logo: {
     width: 30,
     height: 45,

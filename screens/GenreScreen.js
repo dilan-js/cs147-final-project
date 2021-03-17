@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { ProgressBar } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-export default function ReasonScreen({ navigation }) {
+export default function GenreScreen({ navigation }) {
   const [clicked1, setClicked1] = useState(false);
   const [clicked2, setClicked2] = useState(false);
   const [clicked3, setClicked3] = useState(false);
@@ -13,7 +14,7 @@ export default function ReasonScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.outer}>
-        <Text style={styles.question}>What are your main reasons for listening to music?</Text>
+        <Text style={styles.question}>Select Genre(s)</Text>
       </View>
       <View style={styles.inner}>
         <View style={styles.row}>
@@ -23,7 +24,7 @@ export default function ReasonScreen({ navigation }) {
             }}
             style={clicked1 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Intimate Listening</Text>
+            <Text style={styles.boxText}>Pop</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={()=> {
@@ -31,7 +32,7 @@ export default function ReasonScreen({ navigation }) {
             }}
             style={clicked2 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Ambiance</Text>
+            <Text style={styles.boxText}>Rap</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.row}>
@@ -41,7 +42,7 @@ export default function ReasonScreen({ navigation }) {
             }}
             style={clicked3 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Excercise</Text>
+            <Text style={styles.boxText}>R&B</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={()=> {
@@ -49,16 +50,19 @@ export default function ReasonScreen({ navigation }) {
             }}
             style={clicked4 ? styles.clicked : styles.box}
           >
-            <Text style={styles.boxText}>Studying</Text>
+            <Text style={styles.boxText}>Indie Rock</Text>
           </TouchableOpacity>
         </View>
+      </View>
+      <View style={styles.progress}>
+        <ProgressBar progress={0.25} color={'#f4b400'} />
       </View>
       <View style={styles.outer}>
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => {navigation.navigate('Profile')}}
+          onPress={() => {navigation.navigate('PickArtistScreen')}}
         >
-          <Image style={styles.arrow} source={require('../../assets/arrow.png')}/>
+          <Image style={styles.arrow} source={require('../assets/arrow.png')}/>
         </TouchableOpacity>
       </View>
     </View>
@@ -112,7 +116,7 @@ const styles = StyleSheet.create({
   },
   outer: {
     flex: 1,
-    justifyContent: 'center'    
+    justifyContent: 'center',   
   },
   inner: {
     flex: 2
@@ -122,5 +126,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: '#C4C4C4',
     textAlign: 'center'
+  },
+  progress: {
+    width: '60%',
+    flex: 1,
+    justifyContent: 'flex-end'
   }
 });
