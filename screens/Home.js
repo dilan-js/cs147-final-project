@@ -343,7 +343,7 @@ export default function Home({navigation}) {
     [current, next]
   );
 
-  const styles = {
+ const styles = {
     container: {
       backgroundColor: "#fff",
       alignItems: "center",
@@ -367,23 +367,27 @@ export default function Home({navigation}) {
       width: width - 2 * sidePadding,
       position: "absolute",
       left: sidePadding,
-      top: 70,
+      top: 20,
+      backgroundColor: "#f4f4f4",
+      borderRadius: 10
     },
     secondCard: {
       height: 600,
       width: width - 2 * sidePadding,
-      top: 90,
+      top: 40,
       position: "absolute",
       zIndex: 2,
       left: sidePadding,
+      borderRadius: 10
     },
     thirdCard: {
       height: 600,
       width: width - 2 * sidePadding,
-      top: 110,
+      top: 60,
       position: "absolute",
       zIndex: 3,
       left: sidePadding,
+      borderRadius: 10
     },
     listeningIcons: {
       flexDirection: "row",
@@ -394,6 +398,7 @@ export default function Home({navigation}) {
       fontSize: 25,
       fontWeight: "500",
       textAlign: "center",
+      padding: 5
     },
     artist: {
       fontSize: 16,
@@ -484,9 +489,6 @@ export default function Home({navigation}) {
   }, [progress, current, playing]);
   return (
     <View style={styles.screen}>
-      <View style={styles.topBar}>
-        <Text style={styles.staccatoName}>Staccato</Text>
-      </View>
       <View style={styles.main}>
         <Animated.View
           style={[
@@ -546,18 +548,19 @@ export default function Home({navigation}) {
         >
           <View
             style={{
-              flex: 1,
-              backgroundColor: cardArray[0].color,
+               flex: 1,
+              backgroundColor: "#f4f4f4",
               paddingTop: 30,
               paddingLeft: 0,
               alignItems: "center",
-              backgroundColor: "pink",
+              justifyContent: 'space-evenly',
+              borderRadius: 5,
             }}
           >
             <View
               style={{
-                justifyContent: "center",
-                backgroundColor: "white",
+                 justifyContent: "center",
+                backgroundColor: "#f4f4f4",
               }}
             >
               <Image source={require("../sampleData/CUCO.png")} />
@@ -598,11 +601,12 @@ export default function Home({navigation}) {
               <Text style={styles.artist}>{cardArray[0].artist}</Text>
               <View
                 style={{
-                  backgroundColor: "red",
+                   backgroundColor: "#f4f4f4",
                   display: "flex",
                   justifyContent: "space-evenly",
                   alignItems: "center",
                   flexDirection: "row",
+                  margin: 10
                 }}
               >
                 <FontAwesome
@@ -623,7 +627,7 @@ export default function Home({navigation}) {
               </View>
               <View
                 style={{
-                  backgroundColor: "powderblue",
+                 backgroundColor: "#f4f4f4",
                   display: "flex",
                   justifyContent: "space-evenly",
                   paddingHorizontal: 20,
@@ -654,7 +658,7 @@ export default function Home({navigation}) {
         </Animated.View>
       </View>
 
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <TouchableOpacity onPress={() => playSound()}>
           <Text>BUtton 1</Text>
         </TouchableOpacity>
@@ -670,7 +674,7 @@ export default function Home({navigation}) {
         <TouchableOpacity>
           <Text>BUtton 1</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }
