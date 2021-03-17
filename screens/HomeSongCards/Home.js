@@ -14,22 +14,22 @@ import {
   Modal,
   Pressable,
 } from "react-native";
+import {useSelector} from 'react-redux';
+import {setAction, getState} from '../../redux/actions';
 import { FontAwesome, Ionicons, AntDesign } from "@expo/vector-icons";
 import { Audio, Video } from "expo-av";
 import sampleData from "../../sampleData/sampleData";
 import Cuco from "../../sampleData/CUCO.png";
 
-export default function Home() {
+export default function Home({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [disabled, setDisabled] = useState(true);
+  const currentQueue = useSelector((state) =>  state.queue.songs);
   const [progress, setProgress] = useState(0);
   const { width } = useWindowDimensions();
   const sidePadding = 20;
   const [currentStopTime, setCurrentStopTime] = useState();
-  const prevTrackRef = useRef({
-    song: sampleData[sampleData.length - 1],
-    sound: null,
-  });
+  const prevTrackRef = useRef();
   const [current, setCurrent] = useState({
     song: sampleData[0],
     sound: null,
@@ -44,10 +44,21 @@ export default function Home() {
     index: 1,
   });
 
-  const [playing, setPlaying] = useState(true);
-  const loading = async (songNumber) => {
-    const doesNextExist = sampleData[songNumber + 1];
+  
 
+  const [playing, setPlaying] = useState(true);
+
+
+   const goToQueue = () => {
+      navigation.navigate("QueueView");
+    }
+
+
+  //LOADING
+  //cant do based off index b/c we loop through the deck
+  const loading = async (songNumber, initial) => {
+    setDisabled(true);
+    const doesNextExist = sampleData[songNumber + 1];
     const { sound: currentSound } = await Audio.Sound.createAsync(
       sampleData[songNumber].musicLink
     );
@@ -57,25 +68,20 @@ export default function Home() {
         : sampleData[0].musicLink
     );
 
-    if (prevTrackRef.current.sound == null) {
-      const { sound: prevSound } = await Audio.Sound.createAsync(
-        prevTrackRef.current.song.musicLink
-      );
-      prevTrackRef.current = {
-        song: prevTrackRef.current.song,
-        sound: prevSound,
-        index: sampleData.length - 1,
-      };
-    } else {
+    //if initial is not false, meaning we are loading the next track
+    //reset position to zero, put current into previous position.
+    if (!initial) {
       let newPrevSound = current.sound;
-      await newPrevSound?.setPositionAsync(0);
+      await newPrevSound?.setPositionAsync(current.song.start * 1000);
       prevTrackRef.current = {
         song: current.song,
+        duration: 15,
         sound: newPrevSound,
         index: current.index,
       };
     }
 
+   
     const {
       playableDurationMillis: currentSongDuration,
     } = await currentSound.getStatusAsync();
@@ -89,6 +95,7 @@ export default function Home() {
       duration: 15,
       index: songNumber,
     });
+
     setNext({
       song: doesNextExist ? sampleData[songNumber + 1] : sampleData[0],
       sound: nextSound,
@@ -103,6 +110,42 @@ export default function Home() {
       shouldPlay: playing,
       positionMillis: sampleData[songNumber].start * 1000,
     });
+
+    setProgress(0);
+    setDisabled(false);
+  };
+
+  const undoSwipe = async () => {
+    //already saving prev. track in the ref
+    //don't show undo button on first card.
+    const currentPlayStatus = playing;
+    const newCurrentSong = prevTrackRef.current;
+    prevTrackRef.current = null;
+    setPlaying(false);
+    setProgress(0);
+    setCurrent({
+      song: newCurrentSong.song,
+      sound: newCurrentSong.sound,
+      duration: newCurrentSong.duration,
+      index: newCurrentSong.index,
+    });
+    setNext({
+      song: current.song,
+      sound: current.sound,
+      duraton: current.duration,
+      index: current.index,
+    });
+    await current.sound.setStatusAsync({
+      shouldPlay: false,
+      positionMillis: current.song.start * 1000,
+    });
+
+    await newCurrentSong.sound.setStatusAsync({
+      shouldPlay: currentPlayStatus,
+      positionMillis: newCurrentSong.song.start * 1000,
+    });
+
+    setPlaying(currentPlayStatus);
   };
 
   async function playSound() {
@@ -127,8 +170,9 @@ export default function Home() {
     }
   }
 
+  //this only happens on first load.
   useEffect(() => {
-    loading(0);
+    loading(0, true);
   }, []);
 
   const [cardArray, setCardArray] = React.useState([
@@ -177,7 +221,6 @@ export default function Home() {
     },
   ]);
 
-  const disabled = false;
   const cardPosition = React.useRef(new Animated.Value(0)).current;
 
   //HATE THE SONG
@@ -209,9 +252,11 @@ export default function Home() {
         updatedArray.push(removedCard[0]);
         return updatedArray;
       });
-
       // await current.sound?.unloadAsync();
+      const currentSongQueue = getState().queue.songs;
+      setAction("queue", {songs: [...currentSongQueue, current.song]});
       loading(next.index);
+      
     } catch (error) {
       console.log(error);
     }
@@ -497,6 +542,7 @@ export default function Home() {
             },
           ]}
           {...panResponder.panHandlers}
+          pointerEvents={disabled ? "none" : "auto"}
         >
           <View
             style={{
@@ -559,7 +605,13 @@ export default function Home() {
                   flexDirection: "row",
                 }}
               >
-                <FontAwesome name="undo" size={30} color="black" />
+                <FontAwesome
+                  name="undo"
+                  size={30}
+                  disabled={prevTrackRef.current == null}
+                  onPress={undoSwipe}
+                  color={prevTrackRef.current == null ? "#d8d8d8" : "black"}
+                />
 
                 <FontAwesome
                   onPress={playing ? stopSound : playSound}
@@ -607,10 +659,10 @@ export default function Home() {
           <Text>BUtton 1</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => stopSound()}>
-          <Text>BUtton 1</Text>
+          <Text>BUtton </Text>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text>BUtton 1</Text>
+        <TouchableOpacity onPress={goToQueue}>
+        <Text>Queue: {currentQueue.length}  </Text>
         </TouchableOpacity>
         <TouchableOpacity>
           <Text>BUtton 1</Text>
