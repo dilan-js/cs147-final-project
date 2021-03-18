@@ -8,7 +8,8 @@ export default function QueueView() {
         queue.map((song) => 
 
         <View key={song.title}>
-            <Text>{song.title}</Text>
+
+            <Text style={{fontSize: 14}}>{song.title}</Text>
         </View>
     
         )

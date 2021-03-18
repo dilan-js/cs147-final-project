@@ -23,11 +23,14 @@ import { Audio, Video } from "expo-av";
 import sampleData from "../sampleData/sampleData";
 import Cuco from "../sampleData/CUCO.png";
 
+import data from '../sampleData/sampleData';
+
 
 import ShareScreen from './ShareScreen';
 import ShareConfirmationScreen from './ShareConfirmationScreen';
 
  export default function HomeFunction({navigation}) {
+     console.log(data[0].title);
   const [modalVisible, setModalVisible] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const currentQueue = useSelector((state) =>  state.queue.songs);
@@ -455,6 +458,10 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       alignItems: "center",
       marginTop: 15,
     },
+    image:{
+        width: 300,
+        height: 300
+    }
   };
 
   const onSeek = async (position) => {
@@ -493,7 +500,10 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       })();
     }
   }, [progress, current, playing]);
+
+    console.log(current.song);
   return (
+      
     <View style={styles.screen}>
       <View style={styles.main}>
         <Animated.View
@@ -514,9 +524,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
             },
           ]}
         >
-          <View>
-            <Text>HRYOOOO</Text>
-          </View>
+         
         </Animated.View>
 
         <Animated.View
@@ -569,42 +577,10 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
                 backgroundColor: "#f4f4f4",
               }}
             >
-              <Image source={require("../sampleData/CUCO.png")} />
-              <Text style={styles.songTitle}>{cardArray[0].songTitle}</Text>
+              <Image style={styles.image} source={current.song ? current.song.image: ""} />
+              <Text style={styles.songTitle}>{current.song.title}</Text>
 
-              {/* <View style={styles.modalCenteredView}>
-                  <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={modalVisible}
-                    onRequestClose={() => {
-                      Alert.alert("Modal has been closed.");
-                      setModalVisible(!modalVisible);
-                    }}
-                  >
-                    <View style={styles.centeredView}>
-                      <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Hello World!</Text>
-                        <TouchableOpacity
-                          style={[styles.modalButton, styles.modalButtonClose]}
-                          onClick={() => setModalVisible(!modalVisible)}
-                        >
-                          <Text style={styles.modalTextStyle}>Hide Modal</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </Modal>
-                  <TouchableOpacity
-                    style={[styles.modalButton, styles.modalButtonOpen]}
-                    onClick={() => {
-                      setModalVisible(true);
-                      console.log("clicked modal");
-                    }}
-                  >
-                    <Text style={{ color: "black" }}>Show Modal</Text>
-                  </TouchableOpacity>
-                </View> */}
-              <Text style={styles.artist}>{cardArray[0].artist}</Text>
+              <Text style={styles.artist}>{current.song.artist}</Text>
               <View
                 style={{
                    backgroundColor: "#f4f4f4",
