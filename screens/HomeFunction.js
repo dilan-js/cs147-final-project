@@ -577,7 +577,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
                 backgroundColor: "#f4f4f4",
               }}
             >
-              <Image style={styles.image} source={current.song ? current.song.image: ""} />
+              <Image style={styles.image} source={current.song.image} />
               <Text style={styles.songTitle}>{current.song.title}</Text>
 
               <Text style={styles.artist}>{current.song.artist}</Text>
