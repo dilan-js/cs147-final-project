@@ -14,6 +14,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Audio, Video } from "expo-av";
 import sampleData from "./sampleData/sampleData.js";
 import { Icons } from './assets/Icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -45,6 +47,30 @@ function LogoTitle() {
 function TabNav({navigation}) {
   return (
     <Tab.Navigator
+          screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'Home') {
+              iconName = 'home';
+              color = focused ? '#f4b400' : '#c4c4c4';
+            } else if (route.name === 'Friend Recs') {
+              iconName = 'people';
+              color = focused ? '#f4b400' : '#c4c4c4';
+            } else if (route.name === 'Daily Saves') {
+              iconName = 'bookmark';
+              color = focused ? '#f4b400' : '#c4c4c4';
+            } else if (route.name === 'All Saves') {
+              iconName = 'bookmarks';
+              color = focused ? '#f4b400' : '#c4c4c4';
+            } else if (route.name === 'Profile') {
+              iconName = 'person';
+              color = focused ? '#f4b400' : '#c4c4c4';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+        })}
           tabBarOptions={{
             activeTintColor: '#f4b400',
             inactiveTintColor: '#c4c4c4',
@@ -57,6 +83,8 @@ function TabNav({navigation}) {
           <Tab.Screen name="All Saves" component={AllSavesScreen} />
           <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
+
+        
   );
 }
 
