@@ -9,7 +9,7 @@ export default function QueueView() {
 
         <View key={song.title}>
 
-            <Text style={{fontSize: 14}}>{song.title}</Text>
+            <Text style={{fontSize: 25}}>{`${song.title} - ${song.artist}`}</Text>
         </View>
     
         )

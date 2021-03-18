@@ -4,6 +4,7 @@ import { Text, View, StyleSheet, Image, Dimensions, TouchableOpacity } from 'rea
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
+import QueueView from '../screens/QueueView'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
@@ -11,9 +12,9 @@ const Stack = createStackNavigator();
 function DailySaves({ navigation }) {
 
   return (
-    <View style={styles.container}>
-      
-    </View>
+<>
+         <QueueView/>
+    </>
   );
 }
 
