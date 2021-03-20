@@ -14,26 +14,24 @@ import {
   Modal,
   Pressable,
 } from "react-native";
-import {useSelector} from 'react-redux';
-import {setAction, getState} from '../redux/actions';
-import { createStackNavigator } from '@react-navigation/stack';
+import { useSelector } from "react-redux";
+import { setAction, getState } from "../redux/actions";
+import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 import { FontAwesome, Ionicons, AntDesign } from "@expo/vector-icons";
 import { Audio, Video } from "expo-av";
 import sampleData from "../sampleData/sampleData";
 import Cuco from "../sampleData/CUCO.png";
 
-import data from '../sampleData/sampleData';
+import data from "../sampleData/sampleData";
 
+import ShareScreen from "./ShareScreen";
+import ShareConfirmationScreen from "./ShareConfirmationScreen";
 
-import ShareScreen from './ShareScreen';
-import ShareConfirmationScreen from './ShareConfirmationScreen';
-
- export default function HomeFunction({navigation}) {
-     console.log(data[0].title);
+export default function HomeFunction({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const currentQueue = useSelector((state) =>  state.queue.songs);
+  const currentQueue = useSelector((state) => state.queue.songs);
   const [progress, setProgress] = useState(0);
   const { width } = useWindowDimensions();
   const sidePadding = 20;
@@ -53,15 +51,11 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
     index: 1,
   });
 
-  
-
   const [playing, setPlaying] = useState(true);
 
-
-   const goToQueue = () => {
-      navigation.navigate("QueueView");
-    }
-
+  const goToQueue = () => {
+    navigation.navigate("QueueView");
+  };
 
   //LOADING
   //cant do based off index b/c we loop through the deck
@@ -90,7 +84,6 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       };
     }
 
-   
     const {
       playableDurationMillis: currentSongDuration,
     } = await currentSound.getStatusAsync();
@@ -263,9 +256,8 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       });
       // await current.sound?.unloadAsync();
       const currentSongQueue = getState().queue.songs;
-      setAction("queue", {songs: [...currentSongQueue, current.song]});
+      setAction("queue", { songs: [...currentSongQueue, current.song] });
       loading(next.index);
-      
     } catch (error) {
       console.log(error);
     }
@@ -352,7 +344,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
     [current, next]
   );
 
- const styles = {
+  const styles = {
     container: {
       backgroundColor: "#fff",
       alignItems: "center",
@@ -378,7 +370,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       left: sidePadding,
       top: 20,
       backgroundColor: "#f4f4f4",
-      borderRadius: 10
+      borderRadius: 10,
     },
     secondCard: {
       height: 600,
@@ -387,7 +379,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       position: "absolute",
       zIndex: 2,
       left: sidePadding,
-      borderRadius: 10
+      borderRadius: 10,
     },
     thirdCard: {
       height: 600,
@@ -396,7 +388,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       position: "absolute",
       zIndex: 3,
       left: sidePadding,
-      borderRadius: 10
+      borderRadius: 10,
     },
     listeningIcons: {
       flexDirection: "row",
@@ -407,7 +399,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       fontSize: 25,
       fontWeight: "500",
       textAlign: "center",
-      padding: 5
+      padding: 5,
     },
     artist: {
       fontSize: 16,
@@ -458,10 +450,10 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
       alignItems: "center",
       marginTop: 15,
     },
-    image:{
-        width: 300,
-        height: 300
-    }
+    image: {
+      width: 300,
+      height: 300,
+    },
   };
 
   const onSeek = async (position) => {
@@ -501,9 +493,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
     }
   }, [progress, current, playing]);
 
-    console.log(current.song);
   return (
-      
     <View style={styles.screen}>
       <View style={styles.main}>
         <Animated.View
@@ -523,9 +513,7 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
               transform: [{ scale: 0.95 }, { perspective: 1000 }],
             },
           ]}
-        >
-         
-        </Animated.View>
+        ></Animated.View>
 
         <Animated.View
           style={[
@@ -562,18 +550,18 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
         >
           <View
             style={{
-               flex: 1,
+              flex: 1,
               backgroundColor: "#f4f4f4",
               paddingTop: 30,
               paddingLeft: 0,
               alignItems: "center",
-              justifyContent: 'space-evenly',
+              justifyContent: "space-evenly",
               borderRadius: 5,
             }}
           >
             <View
               style={{
-                 justifyContent: "center",
+                justifyContent: "center",
                 backgroundColor: "#f4f4f4",
               }}
             >
@@ -583,12 +571,12 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
               <Text style={styles.artist}>{current.song.artist}</Text>
               <View
                 style={{
-                   backgroundColor: "#f4f4f4",
+                  backgroundColor: "#f4f4f4",
                   display: "flex",
                   justifyContent: "space-evenly",
                   alignItems: "center",
                   flexDirection: "row",
-                  margin: 10
+                  margin: 10,
                 }}
               >
                 <FontAwesome
@@ -605,11 +593,17 @@ import ShareConfirmationScreen from './ShareConfirmationScreen';
                   size={50}
                   color="black"
                 />
-                <FontAwesome name="share" size={30} color="black" />
+
+                <FontAwesome
+                  onPress={() => navigation.navigate("ShareScreen")}
+                  name="share"
+                  size={30}
+                  color="black"
+                />
               </View>
               <View
                 style={{
-                 backgroundColor: "#f4f4f4",
+                  backgroundColor: "#f4f4f4",
                   display: "flex",
                   justifyContent: "space-evenly",
                   paddingHorizontal: 20,

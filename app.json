@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "staccato",
+    "name": "Staccato",
     "slug": "staccato",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -27,6 +27,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "This is a proj with Dilan, Ben, and Josh. "
   }
 }
