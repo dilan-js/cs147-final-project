@@ -10,3 +10,5 @@ We built off of this assumption and finally built out a prototype, begrudgingly 
 Below are pictures of how our prototype functioned: 
 
 
+/Users/dilannana/Desktop/ReactNativeProj/staccato/assets/home_screen_simulator.png
+
